@@ -1,6 +1,8 @@
 # KeyboardSensitiveLayout
 This is the sample code of [Practicing Auto Layout](http://www.think-in-g.net/ghawk/blog/2012/09/practising-auto-layout-an-example-of-keyboard-sensitive-layout).
 
+Xcode 4.5+ and iOS 6 SDK is required to build/run this project.
+
 ## Licence
 Copyright (C) 2012 Yi Gu
 
