@@ -56,20 +56,23 @@
     NSLog(@"The keyboard height is: %f", height);
 
     NSLog(@"Updating constraints.");
+
+    // Because the "space" is actually the difference between the bottom lines of the 2 views,
+    // we need to set a negative constant value here.
+    self.keyboardHeight.constant = -height;
+    
     [UIView animateWithDuration:animationDuration animations:^{
-        // Because the "space" is actually the difference between the bottom lines of the 2 views,
-        // we need to set a negative constant value here.
-        self.keyboardHeight.constant = -height;
-        [self.view setNeedsLayout];
+        [self.view layoutIfNeeded];
     }];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     NSDictionary *info = [notification userInfo];
     NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+
+    self.keyboardHeight.constant = 0;
     [UIView animateWithDuration:animationDuration animations:^{
-        self.keyboardHeight.constant = 0;
-        [self.view setNeedsLayout];
+        [self.view layoutIfNeeded];
     }];
 }
 
