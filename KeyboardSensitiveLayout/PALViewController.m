@@ -11,6 +11,7 @@
 @interface PALViewController ()
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight;
+@property (nonatomic) UIDeviceOrientation currentOrientation;
 - (IBAction)dismissKeyboard:(id)sender;
 
 @end
@@ -41,7 +42,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-
+    self.currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
     [self observeKeyboard];
 }
 
@@ -51,7 +52,8 @@
     NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     CGRect keyboardFrame = [kbFrame CGRectValue];
 
-    BOOL isPortrait = UIDeviceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation);
+    UIDeviceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    BOOL isPortrait = UIDeviceOrientationIsPortrait(orientation);
     CGFloat height = isPortrait ? keyboardFrame.size.height : keyboardFrame.size.width;
     NSLog(@"The keyboard height is: %f", height);
 
@@ -60,6 +62,12 @@
     // Because the "space" is actually the difference between the bottom lines of the 2 views,
     // we need to set a negative constant value here.
     self.keyboardHeight.constant = -height;
+
+    // Update the layout before rotating to address the following issue.
+    // https://github.com/ghawkgu/keyboard-sensitive-layout/issues/1
+    if (self.currentOrientation != orientation) {
+        [self.view layoutIfNeeded];
+    }
     
     [UIView animateWithDuration:animationDuration animations:^{
         [self.view layoutIfNeeded];
@@ -78,5 +86,9 @@
 
 - (IBAction)dismissKeyboard:(id)sender {
     [self.textView resignFirstResponder];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    self.currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
 }
 @end
